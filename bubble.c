@@ -1,11 +1,5 @@
 #include <stdio.h>
-#define ARRAYSIZE(a) (sizeof(a) / sizeof(*a))
-void display(int *a, int size)
-{
-	int i;
-	for (i = 0; i < size; i++)
-		fprintf(stdout, "%d\n", a[i]);
-}
+#include "head.h"
 
 int main(void)
 {
