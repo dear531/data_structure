@@ -7,7 +7,7 @@ int main(void)
 	int num = ARRAYSIZE(a);
 	int i, j, p, tmp;
 	display(a, num);
-	for (i = 0; i < num; i++) {
+	for (i = 0; i < num - 1; i++) {
 		p = i;
 		for (j = i + 1; j < num; j++) {
 			if (a[p] > a[j]) {
