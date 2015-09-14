@@ -63,8 +63,6 @@ struct node *insert_sort(struct node *head, struct node* node)
 			next = head;
 			head = node;
 			node->next = next;
-			printf("node->data :%d\n",
-					node->data);
 			break;
 		} else if (node->data > curr->data) {
 			insert_ret = insert_node(prev, node);
@@ -74,6 +72,22 @@ struct node *insert_sort(struct node *head, struct node* node)
 			curr->next = node;
 			break;
 		}
+	}
+	return head;
+}
+
+struct node *insert_sort_from_network(struct node *head, struct node *node)
+{
+	if (node == NULL) return head;
+	if (head == NULL) return node;
+	struct node *prev, *curr;
+	for (prev = curr = head; NULL != curr && curr->data > node->data; prev = curr, curr = curr->next);
+	if (head == curr) {
+		node->next = head;
+		head = node;
+	} else {
+		node->next = curr;
+		prev->next = node;
 	}
 	return head;
 }
@@ -105,6 +119,28 @@ struct node *link_sort(struct node *head)
 	return new_head;
 }
 
+struct node *link_sort_from_network(struct node *head)
+{
+	if (NULL == head) return head;
+	struct node *first, *prev, *curr, *tmp;
+	first = head->next;
+	head->next = NULL;
+	for ( ;NULL != first; ) {
+		for (tmp = first, curr = head;
+			(NULL != curr) && (tmp->data > curr->data);
+			prev = curr, curr = curr->next) ;
+		first = first->next;
+		if (head == curr) {
+			head = tmp;
+		} else {
+			prev->next = tmp;
+		}
+		tmp->next = curr;
+
+	}
+	return head;
+}
+
 int main(void)
 {
 	int a[] = {2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 0, 0, -3, 200};
@@ -119,19 +155,29 @@ int main(void)
 	display_node(head);
 
 	head = link_sort(head);
-
+	printf("link_sort\n");
 	display_node(head);
 
-	printf("insert_sort\n");
+	head = link_sort_from_network(head);
+	printf("link_sort_from_network\n");
+	display_node(head);
+
+	printf("insert_sort -1\n");
 	p = malloc(sizeof(*p));
 	p->next = NULL;
 	p->data = -1;
 	head = insert_sort(head, p);
 	display_node(head);
 
+	printf("insert_sort_from_network -2\n");
+	p = malloc(sizeof(*p));
+	p->next = NULL;
+	p->data = -2;
+	head = insert_sort_from_network(head, p);
+	display_node(head);
+
 	printf("invert_node\n");
 	head = invert_node(head);
-	printf("display_node\n");
 	display_node(head);
 	printf("free_link\n");
 	head = free_link(head);
