@@ -1,5 +1,6 @@
 #ifndef __LINKS_H__
 #define __LINKS_H__
+#define ARRAYSIZE(a) (sizeof(a) / sizeof(*a))
 struct node {
 	int data;
 	struct node *next;
