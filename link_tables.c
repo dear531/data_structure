@@ -17,6 +17,7 @@ struct node *sort(struct node *head)
 			}
 		}
 		if (currtmp != curr1) {
+#if 0
 			if (head != curr1 && curr1->next != currtmp) {
 				prev1->next = currtmp;
 				prevtmp->next = curr1;
@@ -42,6 +43,29 @@ struct node *sort(struct node *head)
 				currtmp->next = curr1;
 				curr1 = head;
 			}
+#else
+			tmp = currtmp->next;
+			if (head == curr1) {
+				head = currtmp;
+				flag = 1;
+			} else {
+				prev1->next = currtmp;
+				flag = 2;
+			}
+			currtmp->next = curr1->next;
+
+			if (currtmp == curr1->next) {
+				currtmp->next = curr1;
+			} else {
+				prevtmp->next = curr1;
+			}
+			curr1->next = tmp;
+
+			if (flag == 1)
+				curr1 = head;
+			else if (flag == 2)
+				curr1 = currtmp;
+#endif
 		}
 	}
 	return head;
