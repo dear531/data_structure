@@ -51,7 +51,7 @@ int clear_stack(struct stack *stack, int stack_num)
 			stack->data[stack->top1] = 0;
 		}
 	} else if (2 == stack_num) {
-		for ( ; stack->top1 < sizeof(stack->data) / sizeof(*stack->data);
+		for ( ; stack->top2 < sizeof(stack->data) / sizeof(*stack->data);
 				stack->top2++) {
 			stack->data[stack->top2] = 0;
 		}
@@ -129,6 +129,7 @@ int print_stack(struct stack *stack, int stack_num)
 
 int main(void)
 {
+#if 0
 	int i;
 	init_stack(&stack);
 	for (i = 0; i < 10; i++) {
@@ -150,5 +151,20 @@ int main(void)
 	print_stack(&stack, 2);
 	destroy_stack(&stack, 1);
 	destroy_stack(&stack, 2);
+#endif
+	int member;
+	init_stack(&stack);
+	push_stack(&stack, 1, 1);
+	print_stack(&stack, 1);
+	print_stack(&stack, 2);
+	pop_stack(&stack, 1, &member);
+	fprintf(stdout, "member :%d\n", member);
+	push_stack(&stack, 2, member);
+	print_stack(&stack, 1);
+	print_stack(&stack, 2);
+	destroy_stack(&stack, 1);
+	destroy_stack(&stack, 2);
+	print_stack(&stack, 1);
+	print_stack(&stack, 2);
 	return 0;
 }
