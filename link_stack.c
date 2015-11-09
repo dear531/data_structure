@@ -43,13 +43,12 @@ int clear_stack(struct stack *stack)
 	if (NULL == stack->head) {
 		goto out;
 	}
-	struct link *curr, *next, *tmp;
-	for (curr = stack->head, next = stack->head->next; NULL != next;
-			curr = next, next = next->next) {
-		free(curr);
-		stack->number--;
+	struct link *tmp = NULL;
+	for (tmp = stack->head; tmp != NULL; ) {
+		stack->head = stack->head->next;
+		free(tmp);
+		tmp = stack->head;
 	}
-	stack->head = NULL;
 out:
 	return 0;
 }
@@ -118,6 +117,8 @@ int main(void)
 		fprintf(stdout, "i :%d, member :%d\n",
 				i, member);
 	}
+	push_stack(&stack, 1);
 	destroy_stack(&stack);
+	print_stack(&stack);
 	return 0;
 }
