@@ -129,6 +129,7 @@ static inline int is_right(char c)
 static int check_expre(struct expre *expre)
 {
 	int i;
+	char c1, c2;
 	/* check head */
 	if (LEFT != expre[0].exp_num && NUMBER != expre[0].exp_num) {
 		fprintf(stdout, "expre[0].exp_num :%d\n", expre[0].exp_num);
@@ -137,14 +138,13 @@ static int check_expre(struct expre *expre)
 
 	for (i = 0; expre[i + 1].c != 0 && expre[i + 1].exp_num != 0; i++) {
 #if 1
-		if (NUMBER == expre[i].exp_num
-				&& (EXPRE == expre[i + 1].exp_num
-				|| RIGHT == expre[i + 1].exp_num)) {
-		} else if (EXPRE == expre[i].exp_num
-				&& (LEFT == expre[i + 1].exp_num
-				 || NUMBER == expre[i + 1].exp_num)) {
-		} else if (LEFT == expre[i].exp_num && NUMBER == expre[i + 1].exp_num) {
-		} else if (RIGHT == expre[i].exp_num && EXPRE == expre[i + 1].exp_num) {
+		c1 = expre[i].exp_num;
+		c2 = expre[i + 1].exp_num;
+		if ((NUMBER == c1 && (EXPRE == c2 || RIGHT == c2))
+		|| (EXPRE == c1 && (LEFT == c2 || NUMBER == c2)) 
+		|| (LEFT == c1 && NUMBER == c2) 
+		|| (RIGHT == c1 && EXPRE == c2)) {
+			continue;
 		} else {
 			goto failure;
 		}
