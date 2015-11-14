@@ -47,24 +47,18 @@ struct node *sort(struct node *head)
 			tmp = currtmp->next;
 			if (head == curr1) {
 				head = currtmp;
-				flag = 1;
 			} else {
 				prev1->next = currtmp;
-				flag = 2;
 			}
-			currtmp->next = curr1->next;
 
 			if (currtmp == curr1->next) {
 				currtmp->next = curr1;
 			} else {
+				currtmp->next = curr1->next;
 				prevtmp->next = curr1;
 			}
 			curr1->next = tmp;
-
-			if (flag == 1)
-				curr1 = head;
-			else if (flag == 2)
-				curr1 = currtmp;
+			curr1 = currtmp;
 #endif
 		}
 	}
