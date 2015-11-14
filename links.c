@@ -57,12 +57,12 @@ struct node *insert_sort(struct node *head, struct node* node)
 {
 	struct node *prev, *curr, *insert_ret = NULL, *next;
 	for (curr = head; NULL != curr; prev = curr, curr = curr->next) {
-		if (head == curr && node->data > curr->data) {
+		if (head == curr && node->data < curr->data) {
 			next = head;
 			head = node;
 			node->next = next;
 			break;
-		} else if (node->data > curr->data) {
+		} else if (node->data < curr->data) {
 			insert_ret = insert_node(prev, node);
 			break;
 		} else if (NULL == curr->next) {
@@ -79,7 +79,7 @@ struct node *insert_sort_from_network(struct node *head, struct node *node)
 	if (node == NULL) return head;
 	if (head == NULL) return node;
 	struct node *prev, *curr;
-	for (prev = curr = head; NULL != curr && curr->data > node->data; prev = curr, curr = curr->next);
+	for (prev = curr = head; NULL != curr && curr->data < node->data; prev = curr, curr = curr->next);
 	if (head == curr) {
 		node->next = head;
 		head = node;

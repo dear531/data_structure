@@ -103,10 +103,10 @@ int main(void)
 	head = insert_sort(head, p);
 	display_node(head);
 
-	printf("insert_sort_from_network -2\n");
+	printf("insert_sort_from_network 300\n");
 	p = malloc(sizeof(*p));
 	p->next = NULL;
-	p->data = -2;
+	p->data = 300;
 	head = insert_sort_from_network(head, p);
 	display_node(head);
 
