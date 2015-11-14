@@ -6,10 +6,22 @@
 		return -1;		\
 } while(0)
 
+struct expre {
+	char c;
+	char exp_num;
+};
+
+enum {
+	NUMBER = 1,
+	EXPRE,
+	LEFT,
+	RIGHT,
+};
+
 struct stack {
 	struct stack *next;
 	char c;
-} *top = NULL;
+};
 
 int is_empty(struct stack *top)
 {
@@ -52,7 +64,6 @@ int push_stack(struct stack **top_p, char c)
 	if (NULL == (tmp = malloc(sizeof(*tmp)))) {
 		return 1;
 	}
-	/* FIXME */
 	tmp->c= c;
 	tmp->next = *top_p;
 	*top_p = tmp;
@@ -99,9 +110,127 @@ int is_valid(char c)
 	}
 	return 1;
 }
+
+static inline int is_expre(char c)
+{
+	return '+' == c || '-' == c || '*' == c || '/' == c;
+}
+
+static inline int is_flet(char c)
+{
+	return '(' == c;
+}
+
+static inline int is_right(char c)
+{
+	return ')' == c;
+}
+
+static int check_expre(struct expre *expre)
+{
+	int i;
+	/* check head */
+	if (LEFT != expre[0].exp_num && NUMBER != expre[0].exp_num) {
+		fprintf(stdout, "expre[0].exp_num :%d\n", expre[0].exp_num);
+		goto failure;
+	}
+
+	for (i = 0; expre[i + 1].c != 0 && expre[i + 1].exp_num != 0; i++) {
+#if 1
+		if (NUMBER == expre[i].exp_num
+				&& (EXPRE == expre[i + 1].exp_num
+				|| RIGHT == expre[i + 1].exp_num)) {
+		} else if (EXPRE == expre[i].exp_num
+				&& (LEFT == expre[i + 1].exp_num
+				 || NUMBER == expre[i + 1].exp_num)) {
+		} else if (LEFT == expre[i].exp_num && NUMBER == expre[i + 1].exp_num) {
+		} else if (RIGHT == expre[i].exp_num && EXPRE == expre[i + 1].exp_num) {
+		} else {
+			goto failure;
+		}
+#else
+		switch (expre[i].exp_num) {
+			case NUMBER:
+				switch (expre[i + 1].exp_num) {
+					case EXPRE:
+					case RIGHT:
+						break;
+					default:
+						goto failure;
+				}
+				break;
+			case EXPRE:
+				switch (expre[i + 1].exp_num) {
+					case LEFT:
+					case NUMBER:
+						break;
+					default:
+						goto failure;
+				}
+				break;
+			case LEFT:
+				switch (expre[i + 1].exp_num) {
+					case NUMBER:
+						break;
+					default:
+						goto failure;
+				}
+				break;
+			case RIGHT:
+				switch (expre[i + 1].exp_num) {
+					case EXPRE:
+						break;
+					default:
+						goto failure;
+				}
+				break;
+			default:
+				goto failure;
+		}
+#endif
+	}
+	/* check tail */
+	if (RIGHT != expre[i].exp_num && NUMBER != expre[i].exp_num)
+		goto failure;
+	return 0;
+failure:
+#if 0
+	fprintf(stdout, "expre[%d]:%d, epre[%d]:%d failure\n",
+			i, expre[i].exp_num, i + 1, expre[i + 1].exp_num);
+#endif
+	return 1;
+}
+
+int check_bracets(struct expre *expre)
+{
+	struct stack *top = NULL;
+	int i;
+	init_stack(&top);
+	char num;
+	for (i = 0; 0 != expre[i].exp_num; i++) {
+		if (LEFT == expre[i].exp_num) {
+			push_stack(&top, expre[i].c);
+		} else if (RIGHT == expre[i].exp_num) {
+			if (is_empty(top)) {
+				goto failure;
+			} else {
+				pop_stack(&top, &num);
+			}
+		}
+	}
+	if (0 == is_empty(top)) {
+		goto failure;
+	}
+	return 0;
+failure:
+	destroy_stack(&top);
+	return 1;
+}
+
 int main(void)
 {
-#if 1
+	struct stack *top = NULL;
+#if 0
 	/* test code */
 	char c = '0';
 	int i;
@@ -116,5 +245,71 @@ int main(void)
 	}
 	destroy_stack(&top);
 #endif
+#if 1
+	char buff[64] = {0};
+	struct expre expre[64] = {0};
+	char *p;
+	char *pp = NULL;
+	int i, array_num;
+	scanf("%s", buff);
+	fprintf(stdout, "buff :%s\n", buff);
+	for (i = 0, p = buff; *p != '\0'; i++) {
+#if 0
+		printf("i:%d\n", i);
+#endif
+		if ('0' <= *p && '9' >= *p) {
+			expre[i].c = strtol(p, &pp, 10);
+			expre[i].exp_num = NUMBER;
+			p = pp;
+#if 0
+			fprintf(stdout, "c is number :%d\n", expre[i].c);
+#endif
+#if 0	/* is valid */
+		} else if (0 == is_valid(*p)) {
+			expre[i].c = *p;
+			p++;
+#if 1
+			fprintf(stdout, "c is valid char :%c\n", expre[i].c);
+#endif
+#endif	/* end is valid */
+		} else if (is_expre(*p)) {
+			expre[i].c = *p;
+			expre[i].exp_num = EXPRE;
+			p++;
+#if 0
+			fprintf(stdout, "c is expre :%c\n", expre[i].c);
+#endif
+		} else if (is_flet(*p)) {
+			expre[i].c = *p;
+			expre[i].exp_num = LEFT;
+			p++;
+#if 0
+			fprintf(stdout, "c is left :%c\n", expre[i].c);
+#endif
+		} else if (is_right(*p)) {
+			expre[i].c = *p;
+			expre[i].exp_num = RIGHT;
+			p++;
+#if 0
+			fprintf(stdout, "c is right :%c\n", expre[i].c);
+#endif
+		} else {
+#if 0
+			fprintf(stderr, "%c is invalid char\n", *p);
+#endif
+			return -1;
+		}
+	}
+	if (0 != check_expre(expre)) {
+		fprintf(stderr, "check expression is failure\n");
+		return 1;
+	}
+	array_num = i;
+	if (0 != check_bracets(expre)) {
+		fprintf(stderr, "check bracets is failure\n");
+		return 1;
+	}
+#endif
+	destroy_stack(&top);
 	return 0;
 }
