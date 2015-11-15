@@ -174,13 +174,12 @@ failure:
 
 int main(void)
 {
-	struct stack *top = NULL;
 #if 1
 	char buff[64] = {0};
 	struct expre expre[64] = {0};
 	char *p;
 	char *pp = NULL;
-	int i, array_num;
+	int i;
 	scanf("%s", buff);
 	fprintf(stdout, "buff :%s\n", buff);
 #define EXPRE_OPRAT(EXPRE_NUM) do {	\
@@ -208,7 +207,6 @@ int main(void)
 		fprintf(stderr, "check expression is failure\n");
 		return 1;
 	}
-	array_num = i;
 	if (0 != check_bracets(expre)) {
 		fprintf(stderr, "check bracets is failure\n");
 		return 1;
