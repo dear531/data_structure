@@ -190,54 +190,13 @@ int cmp_expre(char c1, char c2)
 }
 #undef CHECK_EXPRE
 
-int main(void)
+int mid_to_suffix(struct expre *expre, struct expre *suffix)
 {
-#if 1
-	char buff[64] = {0};
-	struct expre expre[64] = {0};
-	char *p;
-	char *pp = NULL;
-	int i;
-	scanf("%s", buff);
-	fprintf(stdout, "buff :%s\n", buff);
-#define EXPRE_OPRAT(EXPRE_NUM) do {	\
-	expre[i].c = *p;		\
-	expre[i].exp_num = EXPRE_NUM;	\
-	p++;				\
-} while (0)
-	for (i = 0, p = buff; *p != '\0'; i++) {
-		if ('0' <= *p && '9' >= *p) {
-			expre[i].c = strtol(p, &pp, 10);
-			expre[i].exp_num = NUMBER;
-			p = pp;
-		} else if (is_expre(*p)) {
-			EXPRE_OPRAT(EXPRE);
-		} else if (is_left(*p)) {
-			EXPRE_OPRAT(LEFT);
-		} else if (is_right(*p)) {
-			EXPRE_OPRAT(RIGHT);
-		} else {
-			fprintf(stderr, "invalid expression char %c\n",
-					*p);
-			return -1;
-		}
-	}
-#undef EXPRE_OPRAT 
-	if (0 != check_expre(expre)) {
-		fprintf(stderr, "check expression is failure\n");
-		return 1;
-	}
-	if (0 != check_bracets(expre)) {
-		fprintf(stderr, "check bracets is failure\n");
-		return 1;
-	}
-	struct expre suffix[64] = {0};
 	struct stack *top = NULL;
-	int j;
+	int i, j;
 	char tmpc;
 	init_stack(&top);
 	for (i = 0, j = 0; 0 != expre[i].c && 0 != expre[i].exp_num; i++) {
-		print_stack(top);
 		if (NUMBER == expre[i].exp_num) {
 			suffix[j++] = expre[i];
 		} else if (LEFT == expre[i].exp_num) {
@@ -291,16 +250,98 @@ int main(void)
 		suffix[j].exp_num = EXPRE;
 		j++;
 	}
+	destroy_stack(&top);
+	return 0;
+}
+
+int add_sub_mul_div(char top1, char top2, char exp, char *ret)
+{
+	switch (exp) {
+		case '+':
+			*ret = top1 + top2;
+			break;
+		case '-':
+			*ret = top1 - top2;
+			break;
+		case '*':
+			*ret = top1 * top2;
+			break;
+		case '/':
+			*ret = top1 / top2;
+			break;
+		default:
+			fprintf(stderr, "invalid expression %d %c %d\n",
+					top1, exp, top2);
+			return -1;
+	}
+	return 0;
+}
+
+int algorithm(struct expre *suffix)
+{
+	char ret, top1, top2, i;
+	struct stack *top = NULL;
+	init_stack(&top);
 	for (i = 0; 0 != suffix[i].c && 0 != suffix[i].exp_num; i++) {
 		if (NUMBER == suffix[i].exp_num) {
-			fprintf(stdout, "suffix[%d].c:%d\n",
-					i, suffix[i].c);
+			push_stack(&top, suffix[i].c);
 		} else {
-			fprintf(stdout, "suffix[%d].c:%c\n",
-					i, suffix[i].c);
+			pop_stack(&top, &top2);
+			pop_stack(&top, &top1);
+			add_sub_mul_div(top1, top2, suffix[i].c, &ret);
+			push_stack(&top, ret);
 		}
 	}
+	pop_stack(&top, &ret);
 	destroy_stack(&top);
+	return ret;
+}
+
+int main(void)
+{
+#if 1
+	char buff[64] = {0};
+	struct expre expre[64] = {0};
+	char *p;
+	char *pp = NULL;
+	int i;
+	scanf("%s", buff);
+#define EXPRE_OPRAT(EXPRE_NUM) do {	\
+	expre[i].c = *p;		\
+	expre[i].exp_num = EXPRE_NUM;	\
+	p++;				\
+} while (0)
+	for (i = 0, p = buff; *p != '\0'; i++) {
+		if ('0' <= *p && '9' >= *p) {
+			expre[i].c = strtol(p, &pp, 10);
+			expre[i].exp_num = NUMBER;
+			p = pp;
+		} else if (is_expre(*p)) {
+			EXPRE_OPRAT(EXPRE);
+		} else if (is_left(*p)) {
+			EXPRE_OPRAT(LEFT);
+		} else if (is_right(*p)) {
+			EXPRE_OPRAT(RIGHT);
+		} else {
+			fprintf(stderr, "invalid expression char %c\n",
+					*p);
+			return -1;
+		}
+	}
+#undef EXPRE_OPRAT 
+	if (0 != check_expre(expre)) {
+		fprintf(stderr, "check expression is failure\n");
+		return 1;
+	}
+	if (0 != check_bracets(expre)) {
+		fprintf(stderr, "check bracets is failure\n");
+		return 1;
+	}
+	struct expre suffix[64] = {0};
+	mid_to_suffix(expre, suffix);
+	int ret;
+	ret = algorithm(suffix);
+	fprintf(stdout, " = %d\n", ret);
 #endif
 	return 0;
 }
