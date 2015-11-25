@@ -43,8 +43,10 @@ static inline int init_queue(struct queue *queue)
 static inline int enqueue(struct queue *queue, int data)
 {
 	CHECK_QUEUE_POINTER(queue);
-	if (is_queue_full(queue))
+	if (1 == is_queue_full(queue)) {
+		fprintf(stderr, "queue is full\n");
 		return -1;
+	}
 	queue->data[queue->rear] = data;
 	queue->rear = (queue->rear + 1) % MAX_QUEUE_SIZE;
 	return 0;
@@ -64,7 +66,8 @@ static inline int dequeue(struct queue *queue, int *data)
 static inline int destroy_queue(struct queue *queue)
 {
 	CHECK_QUEUE_POINTER(queue);
-	while (0 == dequeue(queue, NULL)) ;
+	while (0 == dequeue(queue, NULL))
+		dequeue(queue, NULL);
 	return 0;
 }
 
@@ -72,7 +75,7 @@ static inline int print_queue(struct queue *queue)
 {
 	CHECK_QUEUE_POINTER(queue);
 	int i;
-	for (i = queue->front; i < queue->rear; i++) {
+	for (i = queue->front; i != queue->rear; i = (i + 1) % MAX_QUEUE_SIZE) {
 		fprintf(stdout, "queue[%d]:%d\n", i, queue->data[i]);
 	}
 	return 0;
@@ -93,12 +96,20 @@ int main(void)
 	for (i = 0; i < MAX_QUEUE_SIZE; i++) {
 		enqueue(&queue, i);
 	}
+	fprintf(stdout, "front :%d, rear :%d\n", queue.front, queue.rear);
+	print_queue(&queue);
+	fprintf(stdout, "dequeue twice and enqueue 11, 12\n");
+	dequeue(&queue, NULL);
+	dequeue(&queue, NULL);
+	enqueue(&queue, 11);
+	enqueue(&queue, 12);
 	print_queue(&queue);
 	int data;
 	for (i = 0; i < MAX_QUEUE_SIZE && 0 == dequeue(&queue, &data); i++) {
 		fprintf(stdout, "i %d, data %d\n",
 				i, data);
 	}
+	fprintf(stdout, "front :%d, rear :%d\n", queue.front, queue.rear);
 	destroy_queue(&queue);
 	return 0;
 }
