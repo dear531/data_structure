@@ -206,29 +206,34 @@ int level_tree(struct tree *tree, int size)
 	fprintf(stdout, "is full :%d\n", is_queue_full(&queue1));
 #endif
 #if 1
-	struct queue queue1, queue2;
-	int max_number = (log2(size) + 1) * 2;
-	init_queue(&queue1, max_number);
-	init_queue(&queue2, max_number);
-	enqueue(&queue1, tree);
+	struct queue queue;
+	int max_number = log2(size) + 1;
+	max_number = 0x1 << max_number;
+	init_queue(&queue, max_number);
+	enqueue(&queue, tree);
 	struct tree *t;
-	struct queue *qp1 = &queue1, *qp2 = &queue2, *qtmp;
-	int count = 0;
-	while (!is_queue_empty(&queue1) || !is_queue_empty(&queue2)) {
-		while (!is_queue_empty(qp1)) {
-			dequeue(qp1, &t);
-			if (t != NULL)
-				fprintf(stdout, "%d ", t->data);
-			if (!is_queue_full(qp2) && NULL != t->left)
-				enqueue(qp2, t->left);
-			if (!is_queue_full(qp2) && NULL != t->right)
-				enqueue(qp2, t->right);
+	int inc, dec;
+	dec = 1, inc = 0;
+	while (!is_queue_empty(&queue)) {
+		dequeue(&queue, &t);
+		dec--;
+		if (t != NULL)
+			fprintf(stdout, "%d ", t->data);
+		if (!is_queue_full(&queue) && NULL != t->left) {
+			enqueue(&queue, t->left);
+			inc++;
 		}
-		fprintf(stdout, "\n");
-		qtmp = qp1; qp1 = qp2; qp2 = qtmp;
+		if (!is_queue_full(&queue) && NULL != t->right) {
+			enqueue(&queue, t->right);
+			inc++;
+		}
+		if (0 == dec) {
+			dec = inc;
+			inc = 0;
+			fprintf(stdout, "\n");
+		}
 	}
-	destroy_queue(&queue1);
-	destroy_queue(&queue2);
+	destroy_queue(&queue);
 #endif
 	return 0;
 
@@ -237,7 +242,7 @@ int level_tree(struct tree *tree, int size)
 int main(void)
 {
 	struct tree *root;
-	int a[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+	int a[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
 	root = init_tree(a, 0, sizeof(a) / sizeof(*a) - 1);
 	order(root, 0);
 	fprintf(stdout, "====\n");
@@ -246,8 +251,7 @@ int main(void)
 	order(root, 0);
 	fprintf(stdout, "depth :%d\n", depth(root));
 	fprintf(stdout, "count :%d\n", count(root));
-	fprintf(stdout, "sizeof (a):%ld\n", sizeof(a) /
-			sizeof(*a));
+	fprintf(stdout, "sizeof (a):%ld\n", sizeof(a) / sizeof(*a));
 	level_tree(root, sizeof(a) / sizeof(*a));
 	//destroy_tree(root);
 	root = NULL;
