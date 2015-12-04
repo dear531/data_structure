@@ -260,10 +260,11 @@ int main(void)
 	}
 	destroy_queue(&q);
 	
-	fprintf(stdout, "inorder for loop\n");
+	fprintf(stdout, "preorder for loop\n");
 	struct stack s;
 	init_stack(&s);
-	push_stack(&s, tree);
+	if (tree)
+		push_stack(&s, tree);
 	while (!is_stack_empty(&s)) {
 		tmpt = pop_stack(&s);
 		fprintf(stdout, "%c\n", tmpt->c);
@@ -273,6 +274,47 @@ int main(void)
 			push_stack(&s, tmpt->l);
 	}
 	destroy_stack(&s);
+
+	fprintf(stdout, "preorder or inorder for nonrecursive\n");
+	int left_flag = 0;
+	init_stack(&s);
+	tmpt = tree;
+	while (tmpt || !is_stack_empty(&s)) {
+		while (tmpt) {
+#if 1	/* this is preorder position */
+			fprintf(stdout, "%c\n", tmpt->c);
+#endif
+			push_stack(&s, tmpt);
+			tmpt = tmpt->l;
+		}
+		if (!is_stack_empty(&s)) {
+			tmpt = pop_stack(&s);
+#if 0	/* this is inorder position */
+			fprintf(stdout, "%c\n", tmpt->c);
+#endif
+			tmpt = tmpt->r;
+		}
+	}
+	destroy_stack(&s);
+	fprintf(stdout, "two stack for postorder\n");
+	struct stack s1, s2;
+	init_stack(&s1);
+	init_stack(&s2);
+	tmpt = tree;
+	push_stack(&s1, tmpt);
+	while (!is_stack_empty(&s1)) {
+		tmpt = pop_stack(&s1);
+		push_stack(&s2, tmpt);
+		if (tmpt->l)
+			push_stack(&s1, tmpt->l);
+		if (tmpt->r)
+			push_stack(&s1, tmpt->r);
+	}
+	while (!is_stack_empty(&s2)) {
+		fprintf(stdout, "%c\n", pop_stack(&s2)->c);
+	}
+	destroy_stack(&s1);
+	destroy_stack(&s2);
 	destroy_tree(tree);
 	tree = NULL;
 #endif
