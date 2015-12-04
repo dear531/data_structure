@@ -118,13 +118,13 @@ static void destroy_tree(struct tree *t)
 	free(t);
 }
 
-static void inorder_tree_recurs(struct tree *tree)
+static void preorder_tree_recurs(struct tree *tree)
 {
 	if (NULL == tree)
 		return;
 	fprintf(stdout, "%c\n", tree->c);
-	inorder_tree_recurs(tree->l);
-	inorder_tree_recurs(tree->r);
+	preorder_tree_recurs(tree->l);
+	preorder_tree_recurs(tree->r);
 }
 
 struct stack {
@@ -198,7 +198,7 @@ int main(void)
 #if 0
 	struct tree *tree;
 	tree = init_tree();
-	inorder_tree_recurs(tree);
+	preorder_tree_recurs(tree);
 #endif
 #if 0
 	struct tree *t[10], *tmpt;
@@ -223,8 +223,8 @@ int main(void)
 #if 1
 	struct tree *tree;
 	tree = init_tree();
-	fprintf(stdout, "inorder_tree_recurs\n");
-	inorder_tree_recurs(tree);
+	fprintf(stdout, "preorder_tree_recurs\n");
+	preorder_tree_recurs(tree);
 
 	fprintf(stdout, "level order loop\n");
 	struct queue q;
