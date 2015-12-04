@@ -263,25 +263,14 @@ int main(void)
 	fprintf(stdout, "inorder for loop\n");
 	struct stack s;
 	init_stack(&s);
-	tmpt = tree;
-	while (NULL != tmpt || !is_stack_empty(&s)) {
+	push_stack(&s, tree);
+	while (!is_stack_empty(&s)) {
+		tmpt = pop_stack(&s);
 		fprintf(stdout, "%c\n", tmpt->c);
-		if ((NULL != tmpt->l) && (NULL != tmpt->r)) {
-			/* l to assinment tmpt and r push_stack */
+		if (tmpt->r)
 			push_stack(&s, tmpt->r);
-			tmpt = tmpt->l;
-		} else if (NULL == tmpt->l && NULL != tmpt->r) {
-			/* r to assinment tmpt */
-			tmpt = tmpt->r;
-		} else if (NULL != tmpt->l && NULL == tmpt->r) {
-			/* l to assinment tmpt */
-			tmpt = tmpt->l;
-		} else if (NULL == tmpt->l && NULL == tmpt->r && !is_stack_empty(&s)) {
-			/* dequeue to tmpt */
-			tmpt = pop_stack(&s);
-		} else {
-			break;
-		}
+		if (tmpt->l)
+			push_stack(&s, tmpt->l);
 	}
 	destroy_stack(&s);
 	destroy_tree(tree);
