@@ -2,8 +2,8 @@
 
 int main(void)
 {
-	int a[10];
-	int i, tmp, search = 4;
+	int a[1];
+	int i, tmp, search = 0;
 	for (i = 0; i < sizeof(a) / sizeof(*a); i++) {
 		a[i] = 2 * i;
 	}
