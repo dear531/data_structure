@@ -13,8 +13,8 @@ void quick(int *a, int left, int right)
 		a[l] = a[r];
 	}
 	a[r] = key;
-	quick(a, left, l - 1);
-	quick(a, l + 1, right);
+	quick(a, left, r - 1);
+	quick(a, r + 1, right);
 	return;
 }
 
