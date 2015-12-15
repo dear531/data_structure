@@ -31,7 +31,8 @@ int merge_sort(int *a, int n)
 		while (start + step < n) {
 			if (n >= start + step * 2)
 				merge(a, start, start + step - 1, start + step * 2 - 1);
-			else if (n > start + step)
+			else
+				/* start + step < n && n <= start + step * 2 */
 				merge(a, start, start + step - 1, n - 1);
 			start += step * 2;
 		}
