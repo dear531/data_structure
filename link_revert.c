@@ -32,17 +32,13 @@ struct node *link_revert(struct node *head)
 {
 	if (NULL == head)
 		return head;
-	struct node *curr, *prev, *next;
-	curr = head;
-	next = head->next;
-	while (NULL != curr) {
-		curr->next = prev;
-		prev = curr;
-		if (NULL == next)
-			break;
+	struct node *prev = NULL, *curr, *next = head;
+	do {
 		curr = next;
 		next = next->next;
-	}
+		curr->next = prev;
+		prev = curr;
+	} while (NULL != next);
 	return prev;
 }
 
