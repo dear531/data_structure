@@ -30,15 +30,15 @@ struct node *insert(struct node *head, int a)
 
 struct node *link_revert(struct node *head)
 {
-	if (NULL == head)
+	if (NULL == head || NULL == head->next)
 		return head;
 	struct node *prev = NULL, *curr, *next = head;
-	do {
+	while (NULL != next) {
 		curr = next;
 		next = next->next;
 		curr->next = prev;
 		prev = curr;
-	} while (NULL != next);
+	}
 	return prev;
 }
 
